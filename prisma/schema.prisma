@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("user") // "user" | "admin"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  queries   Query[]
+
+  @@map("users")
+}
+
+model GovService {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  steps       Json     // ["Step 1: ..."]
+  documents   Json[]   // ["NID", "Birth proof"]
+  formFields  Json     // {"name": "string", "father_name": "string"}
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("gov_services")
+}
+
+model Query {
+  id         String     @id @default(cuid())
+  userId     String
+  question   String
+  answer     String?
+  audioUrl   String?
+  serviceName String?
+  createdAt  DateTime   @default(now())
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("queries")
+}
