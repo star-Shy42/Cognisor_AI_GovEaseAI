@@ -29,6 +29,7 @@ export default function Navbar() {
                 <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-all">
                   Dashboard
                 </Link>
+               
                 {user.role === 'admin' && (
                   <Link href="/admin" className="px-4 py-2 text-sm font-semibold bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all">
                     Admin
@@ -41,6 +42,7 @@ export default function Navbar() {
                   Logout
                 </button>
               </>
+
             )}
           </div>
         </div>

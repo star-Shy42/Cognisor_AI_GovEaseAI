@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import NearestOffices from '../components/NearestOffices.js';
 import { useAuth } from '../providers.js';
 import { getServices, submitQuery, fillForm, getLocations } from '../../services/govease.js';
 import Link from 'next/link';
@@ -19,6 +20,7 @@ export default function Dashboard() {
   const [lat, setLat] = useState('');
   const [lng, setLng] = useState('');
   const [locationLoading, setLocationLoading] = useState(false);
+  const [isNearestModalOpen, setIsNearestModalOpen] = useState(false);
 
   useEffect(() => {
     fetchServices();
@@ -97,20 +99,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleLocations = async () => {
-    if (!lat || !lng) {
-      alert('Enter coordinates or enable location');
-      return;
-    }
-    setLocationLoading(true);
-    try {
-      const data = await getLocations(lat, lng);
-      setLocations(data);
-    } catch (err) {
-      alert(err.message);
-    }
-    setLocationLoading(false);
-  };
+
 
   if (!user) {
     return (
@@ -219,48 +208,44 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Locations */}
-      <div className="bg-white/70 backdrop-blur p-8 rounded-3xl shadow-xl mt-12">
-        <h2 className="text-2xl font-bold mb-6">📍 Nearest Government Offices</h2>
-        <div className="grid md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
-          <input
-            placeholder="Latitude (23.81)"
-            value={lat}
-            onChange={(e) => setLat(e.target.value)}
-            className="p-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 font-mono"
-          />
-          <input
-            placeholder="Longitude (90.41)"
-            value={lng}
-            onChange={(e) => setLng(e.target.value)}
-            className="p-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 font-mono"
-          />
-          <button 
-            onClick={handleLocations}
-            disabled={!lat || !lng || locationLoading}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold shadow-xl hover:shadow-2xl disabled:opacity-50 transition-all font-mono text-lg"
-          >
-            {locationLoading ? 'Searching...' : '🔍 Find Offices'}
-          </button>
-        </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {locations.map((loc, i) => (
-            <div key={i} className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-2xl border-2 border-indigo-200 shadow-lg hover:shadow-xl transition-all">
-              <h4 className="font-black text-xl mb-2 text-indigo-900">{loc.name}</h4>
-              <p className="text-indigo-700 font-semibold mb-2">{loc.services.join(', ')}</p>
-              <p className="text-sm text-gray-600 mb-3">📏 {(loc.distance * 111).toFixed(1)}km away</p>
-              <button className="w-full bg-indigo-600 text-white py-2 px-4 rounded-xl font-bold hover:bg-indigo-700 transition-all">
-                Get Directions
-              </button>
-            </div>
-          ))}
-        </div>
-        {!locations.length && lat && lng && (
-          <div className="text-center py-12 text-gray-500">
-            No nearby offices found. Try different coordinates.
-          </div>
-        )}
+      <div className="bg-white/70 backdrop-blur p-8 rounded-3xl shadow-xl mt-12 text-center">
+        <button
+          onClick={() => setIsNearestModalOpen(true)}
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold shadow-xl hover:shadow-2xl hover:from-indigo-700 hover:to-purple-700 transition-all text-lg mx-auto"
+        >
+          📍 Find Nearest Offices
+        </button>
       </div>
+
+      {/* Nearest Offices Modal */}
+      {isNearestModalOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setIsNearestModalOpen(false)}
+          />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl max-w-6xl max-h-[90vh] w-full overflow-hidden border border-gray-200">
+              <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-2xl font-bold">📍 Nearest Government Offices</h2>
+                <button
+                  onClick={() => setIsNearestModalOpen(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold p-2 hover:bg-gray-200 rounded-xl transition-all"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                <NearestOffices 
+                  token={token} 
+                  className="max-h-full"
+                  onClose={() => setIsNearestModalOpen(false)}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

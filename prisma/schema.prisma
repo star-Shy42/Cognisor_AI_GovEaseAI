@@ -12,7 +12,7 @@ model User {
   email     String   @unique
   password  String
   name      String?
-  role      String   @default("user") // "user" | "admin"
+  role      String   @default("user")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   queries   Query[]
@@ -43,4 +43,17 @@ model Query {
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("queries")
+}
+
+model Office {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  lat       Float
+  lng       Float
+  services  String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("offices")
 }

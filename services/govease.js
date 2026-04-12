@@ -44,9 +44,23 @@ export async function fillForm(token, serviceName, basicInfo) {
   return response.json();
 }
 
-export async function getLocations(lat, lng) {
-  const response = await fetch(`${API_BASE}/locations?lat=${lat}&lng=${lng}`);
-  if (!response.ok) throw new Error('Locations failed');
-  return response.json();
+export async function getLocations(token, lat, lng) {
+  const response = await fetch(
+    `${API_BASE}/locations?lat=${lat}&lng=${lng}`,
+    {
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Locations failed');
+  }
+
+  return data;
 }
 

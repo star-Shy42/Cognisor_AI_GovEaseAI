@@ -31,7 +31,6 @@ export async function middleware(request) {
   }
   // Admin APIs public for demo - no auth
   else if (pathname.startsWith('/api/admin')) {
-    console.log('Admin API access - public for demo');
   }
 
   return NextResponse.next();
@@ -43,4 +42,3 @@ export const config = {
     '/api/admin/:path*'
   ]
 };
-

@@ -5,7 +5,7 @@ import { generateToken } from '../../../../lib/auth.js';
 
 export async function POST(request) {
   try {
-    const { email, password, name } = await request.json();
+    const { email, password, name,role } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
@@ -18,6 +18,7 @@ export async function POST(request) {
         email: email.toLowerCase(),
         password: hashedPassword,
         name: name || null,
+        role:role || 'user'
       },
     });
 
@@ -25,7 +26,7 @@ export async function POST(request) {
 
     return NextResponse.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name }
+      user: { id: user.id, email: user.email, name: user.name, role: user.role }
     });
   } catch (error) {
     console.error(error);

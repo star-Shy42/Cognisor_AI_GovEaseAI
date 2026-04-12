@@ -1,53 +1,66 @@
-import { NextResponse } from 'next/server';
-import { processQuery } from '../../../../lib/transformers.js';
-import prisma from '../../../../lib/prisma.js';
+import { NextResponse } from "next/server";
+import { processQuery } from "../../../../lib/transformers.js";
+import prisma from "../../../../lib/prisma.js";
 
 export async function POST(request) {
   try {
-    const userId = request.headers.get('x-user-id') || 'anonymous';
+    const userId = request.headers.get("x-user-id") || "anonymous";
     const { question, audio } = await request.json();
 
     let text = question;
     if (audio) {
-      console.log('Audio transcription requested');
-      text = 'Transcribed from audio'; // TODO: implement full whisper
+      console.log("Audio transcription requested");
+      text = "Transcribed from audio"; // TODO: implement full whisper
     }
 
-    // Match to service
-    const serviceMatch = await prisma.govService.findFirst({
+    const words = text.split(" ").filter((w) => w.length > 2);
+
+    const services = await prisma.govService.findMany({
       where: {
-        name: {
-          contains: text.toLowerCase(),
-          mode: 'insensitive'
-        }
-      }
+        OR: words.map((word) => ({
+          name: {
+            contains: word,
+            mode: "insensitive",
+          },
+        })),
+      },
+      take: 5,
     });
 
-    let answer;
-    if (serviceMatch) {
-      const context = `Name: ${serviceMatch.name}
-Description: ${serviceMatch.description || ''}
-Steps: ${JSON.stringify(serviceMatch.steps)}
-Documents: ${JSON.stringify(serviceMatch.documents)}`;
-      answer = await processQuery(question, context);
-    } else {
-      answer = await processQuery(question);
+    const serviceNames = services.map((s) => s.name).join(" | ");
+
+    let context = "";
+
+    if (services.length > 0) {
+      context = services
+        .map(
+          (service) => `
+${JSON.stringify(service.steps)}  `,
+        )
+        .join(". ");
     }
 
-    // Save query
+    const cleanText = (text) => {
+      return text
+        .replace(/[^a-zA-Z0-9\s]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    };
+
+    const answer = cleanText(await processQuery(text, context));
+
     await prisma.query.create({
       data: {
         userId,
         question: text,
         answer,
-        serviceName: serviceMatch?.name || null
-      }
+        serviceName: serviceNames || null,
+      },
     });
 
-    return NextResponse.json({ answer, service: serviceMatch?.name });
+    return NextResponse.json({ answer });
   } catch (error) {
-    console.error('Query error:', error);
-    return NextResponse.json({ error: 'Processing error' }, { status: 500 });
+    console.error("Query error:", error);
+    return NextResponse.json({ error: "Processing error" }, { status: 500 });
   }
 }
-

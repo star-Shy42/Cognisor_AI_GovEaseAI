@@ -63,3 +63,52 @@ export async function getQueries(token) {
   return response.json();
 }
 
+export async function getOffices(token) {
+  const response = await fetch(`${API_BASE}/offices`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to fetch offices');
+  return response.json();
+}
+
+export async function createOffice(formData, token) {
+  const response = await fetch(`${API_BASE}/offices`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  });
+  if (!response.ok) throw new Error('Failed to create office');
+  return response.json();
+}
+
+export async function updateOffice(id, formData, token) {
+  const response = await fetch(`${API_BASE}/offices`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id, ...formData })
+  });
+  if (!response.ok) throw new Error('Failed to update office');
+  return response.json();
+}
+
+export async function deleteOffice(id, token) {
+  const response = await fetch(`${API_BASE}/offices`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id })
+  });
+  if (!response.ok) throw new Error('Failed to delete office');
+  return response.json();
+}
+

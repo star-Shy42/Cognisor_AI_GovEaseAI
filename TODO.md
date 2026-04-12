@@ -1,37 +1,11 @@
-# GovEase AI Backend ✅ COMPLETE
+# Update /api/govease/form-fill to align with backend APIs
 
-## Features Implemented:
-- **Auth:** JWT stateless (register/login)
-**Prisma v6 + PostgreSQL:** Users, GovServices (dynamic), Queries
-- **Local HF Transformers:** Text gen (distilgpt2), Whisper Bangla STT ready
-- **APIs:**
-  | Endpoint | Method | Auth | Description |
-  |----------|--------|------|-------------|
-  | /api/auth/register | POST | - | Create user, JWT |
-  | /api/auth/login | POST | - | Login JWT |
-  | /api/govease/services | GET | - | List services |
-  | /api/govease/query | POST | JWT | NLP Q&A (text) |
-  | /api/govease/form-fill | POST | JWT | AI form fill |
-  | /api/govease/locations | GET | - | Mock nearest |
-- **Home page:** Docs + setup guide
-- **Middleware:** JWT for protected
+## Plan Steps
+- [ ] 1. Create TODO.md (current)
+- [x] 2. Update app/api/govease/form-fill/route.js (ESM, enhanced service fetch/steps/docs context, QA-optimized prompt, save to Query, add GET, consistent auth/logging)
+- [x] 3. Update services/govease.js (align auth header)
+- [x] 4. Test endpoints (via curl/prisma db)
+- [x] 5. Complete task
 
-## Run:
-```
-cd govease-ai-backend
-npm install
-cp .env.example .env
-# Edit .env: DATABASE_URL (postgres://...), JWT_SECRET
-npx prisma generate
-npx prisma db push
-# Use `npx prisma studio` to add dynamic GovService data
-npm run dev
-```
-
-Open http://localhost:3000 for docs.
-Test APIs: curl -X POST http://localhost:3000/api/auth/register -H "Content-Type: application/json" -d '{"email":"test@test.com","password":"pass123","name":"Test"}'
-
-Models download ~200MB first HF use.
-
-**DB ready, deps ready, APIs ready. GovEase AI backend complete!**
-
+## Details
+See plan in chat history.

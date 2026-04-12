@@ -23,7 +23,7 @@ export async function POST(request) {
 
     return NextResponse.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name }
+      user: { id: user.id, email: user.email, name: user.name, role: user.role }
     });
   } catch (error) {
     console.error(error);
