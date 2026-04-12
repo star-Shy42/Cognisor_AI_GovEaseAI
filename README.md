@@ -1,4 +1,4 @@
-# GovEase AI Backend 🚀
+# GovEase AI 🚀
 
 GovEase AI is a Bangladesh government service assistant built with Next.js 16 App Router. Users can:
 
@@ -91,7 +91,7 @@ npm run dev
 
 ## 📄 License
 
-MIT
+JUST
 
 ---
 
